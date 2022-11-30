@@ -1,0 +1,314 @@
+clear;
+close all;
+clc;
+% Katalógusból vett, és számolt adatok:
+U_n=9;
+R_a=1.05;
+L_a=1.3/10000; 
+k_m=0.017;
+k_s=(562*2*pi)/60;
+J_r=4.08/1000000;
+i_n=2.62;
+w_n=5000*2*pi/60;
+k_e=1/k_s;
+s=tf('s');
+
+%A rendszer időállandói
+T_1=0.014705969873116;
+T_2=0.000124860725951;
+
+
+% 1. feladat, a:
+
+% Vágási körfrekvencia:
+w_c=tan(pi/3)/T_2
+
+% 1. feladat, b:
+
+% P meghatározása:
+P_1=L_a*J_r*sqrt(T_2^2*w_c^4+w_c^2)/(k_m*T_2)
+
+% A felnyitott kör átviteli függvénye P-t behelyettesítve:
+Wx_2=P_1*k_m*T_2/(s*L_a*J_r*(T_2*s+1));
+
+% I kiszámítása:
+I_1=P_1/T_1
+
+% 1. feladat, c:
+
+% Üresjárati szögsebesség megadása
+w_0=U_n/k_e;
+
+% A zárt szabályozási kör átviteli függvénye:
+Wcl_2b=P_1*k_m/(s*L_a*J_r*(s+1/T_2)+P_1*k_m);
+figure('NumberTitle', 'off', 'Name', 'Első feladat b része');
+step(Wcl_2b*w_0);
+title('Zárt szabályozási kör ugrás válasza')
+ylabel('Szögsebesség [rad/s]')
+xlabel('idő ')
+grid;
+
+% 1. feladat, d:
+
+
+% Állandósult szögsebesség:
+vegertek=dcgain(Wcl_2b*w_0)
+
+
+clear;
+
+
+% Katalógusból vett, és számolt adatok:
+U_n=9;
+R_a=1.05;
+L_a=1.3/10000; 
+k_m=0.017;
+k_s=(562*2*pi)/60;
+J_r=4.08/1000000;
+i_n=2.62;
+w_n=5000*2*pi/60;
+k_e=1/k_s;
+s=tf('s');
+n=0.1;
+
+%A rendszer időállandói
+T_1=0.014705969873116;
+T_2=0.000124860725951;
+
+
+% 2. feladat, a:
+
+% Vágási körfrekvencia:
+w_c=((n*T_2+T_1)+sqrt((n*T_2+T_1)^2-4*n*T_1*T_2/3))/(2*n*T_1*T_2*sqrt(3)/3)
+
+% 2. feladat, b:
+
+% P meghatározása:
+P_2 = L_a*J_r*sqrt((1-T_2*T_1*n*w_c^2)^2+((T_1+T_2*n)^2*w_c^2))/k_m/T_2/T_1
+
+% A felnyitott kör átviteli függvénye:
+Wx_2=P_2*k_m*T_2*T_1/(L_a*J_r*(1+n*T_2*s)*(T_1*s+1));
+
+% D kiszámítása:
+D_2=P_2*T_2
+
+
+% 2. feladat, c:
+
+% A zárt szabályozási kör válaszfüggvénye üresjárati szögsebességgel: 
+w_0=U_n/k_e;
+
+% Átviteli függvény:
+Wcl_2b=P_2*k_m*T_2/(L_a*J_r*(1+n*T_2*s)*(s+1/T_1)+P_2*k_m*T_2);
+
+figure('NumberTitle', 'off', 'Name', 'Második feladat b része:');
+step(Wcl_2b*w_0);
+title('Zárt szabályozási kör ugrás válasza')
+ylabel('Szögsebesség [rad/s]')
+xlabel('idő ')
+grid;
+
+% 2. feladat, d:
+
+% Állandósult szögsebesség:
+vegertek2=w_0*P_2*k_m*T_2/(P_2*k_m*T_2+L_a*J_r*(1/T_1))
+
+
+clear;
+
+
+% Katalógusból vett, és számolt adatok:
+U_n=9;
+R_a=1.05;
+L_a=1.3/10000; 
+k_m=0.017;
+k_s=(562*2*pi)/60;
+J_r=4.08/1000000;
+i_n=2.62;
+w_n=5000*2*pi/60;
+k_e=1/k_s;
+s=tf('s');
+n=0.1;
+
+%A rendszer időállandói
+T_1=0.014705969873116;
+T_2=0.000124860725951;
+
+
+% Katalógusból vett, és számolt adatok:
+U_n=9;
+R_a=1.05;
+L_a=1.3/10000; 
+k_m=0.017;
+k_s=(562*2*pi)/60;
+J_r=4.08/1000000;
+i_n=2.62;
+w_n=5000*2*pi/60;
+k_e=1/k_s;
+s=tf('s');
+n=0.1;
+w_0=U_n/k_e;
+
+%A rendszer időállandói
+T_1=0.014705969873116;
+T_2=0.000124860725951;
+
+
+% 3. feladat, a:
+
+% Pólusok megadása:
+beta=log(100/2)/0.04
+w_d=-(beta*pi)/log(0.05)
+
+
+% 3. feladat, b:
+
+% Karakterisztikus egyenlet:
+kar_egy_3=(s+beta+w_d*1i)*(s+beta-w_d*1i)
+
+% Szabályozó K mátrixának megadása:
+K_1=(w_d^2+beta^2)-(k_m*k_e)/(L_a*J_r)
+K_2=(2*beta)-R_a/L_a
+
+
+% 3. feladat, c:
+
+% Új rendszermátrix meghatározása és a rendszer ugrásválaszának kirajzolása:
+A=[0 1;
+-k_m*k_e/(L_a*J_r) -R_a/L_a];
+A_uj=[0 1 ;
+-20080 -195.6];
+B=[0;1];
+C=[k_m/(L_a*J_r) 0];
+
+figure('NumberTitle', 'off', 'Name', 'Harmadik feladat c része: ');
+step(A_uj,B*w_0,C,0);
+title('Zárt szabályozási kör ugrás válasza')
+ylabel('Szögelfordulás [rad]')
+xlabel('idő ')
+grid;
+
+
+% 3. feladat, d:
+
+% Végérték megadása:
+vegertek_3d=dcgain(A_uj,B*w_0,C,0)
+
+
+% 3. feladat, e:
+
+% Alapjelkompenzációhoz használt Kr megadása:
+Kr=-inv(C*inv(A_uj)*B)
+
+
+% 3. feladat, f:
+
+figure('NumberTitle', 'off', 'Name', 'Harmadik feladat f része: ');
+step(A_uj,B*w_0*Kr,C,0);
+title('Zárt szabályozási kör ugrás válasza')
+ylabel('Szögelfordulás [rad]')
+xlabel('idő ')
+grid;
+
+
+% 3. feladat, g:
+
+% Rendszer végértéke statikus alapjelkompenzációval:
+vegertek_3g=dcgain(A_uj,B*w_0*Kr,C,0)
+
+
+
+
+
+% Katalógusból vett, és számolt adatok:
+U_n=9;
+R_a=1.05;
+L_a=1.3/10000; 
+k_m=0.017;
+k_s=(562*2*pi)/60;
+J_r=4.08/1000000;
+i_n=2.62;
+w_n=5000*2*pi/60;
+k_e=1/k_s;
+s=tf('s');
+n=0.1;
+w_0=U_n/k_e;
+
+%A rendszer időállandói
+T_1=0.014705969873116;
+T_2=0.000124860725951;
+
+
+% 4. feladat, a:
+
+% Pólusok megadása:
+beta=log(100/2)/0.04
+w_d=-(beta*pi)/log(0.05)
+
+
+% 4. feladat, b:
+
+% Karakterisztikus egyenlet:
+kar_egy_4=(s+beta+w_d*1i)*(s+beta-w_d*1i)*(s+3*beta)
+
+% Szabályozó K mátrixának megadása:
+K_1=(w_d^2+beta^2)*(3*beta)
+K_2=-(k_m*k_e)/(L_a*J_r)+(w_d^2+7*beta^2)
+K_3=-R_a/L_a+5*beta
+
+
+% 4. feladat, c:
+
+% Új rendszermátrix meghatározása és a rendszer ugrásválaszának kirajzolása:
+A_4=[0 1 0 ;
+0 0 1 ;
+0 -k_m*k_e/(L_a*J_r) -R_a/L_a];
+A_uj4=[0 1 0;
+0 0 1;
+-5893000 -77470 -489];
+B_4=[0;0;1];
+C_4=[k_m/(L_a*J_r) 0 0];
+
+figure('NumberTitle', 'off', 'Name', 'Negyedik feladat c része: ');
+step(A_uj4,B_4*2*pi,C_4,0);
+title('Zárt szabályozási kör ugrás válasza')
+ylabel('Szögelfordulás [rad]')
+xlabel('idő ')
+grid;
+
+
+% 4. feladat, d:
+
+% Végérték megadása:
+vegertek_4d=dcgain(A_uj4,B_4*2*pi,C_4,0)
+
+
+% 4. feladat, e:
+
+% Alapjelkompenzációhoz használt paraméterek:
+HM1_4=[A_4 B_4;
+     C_4 0];
+HM2_4=[0;0;0;1];
+Kr_xu_4=inv(HM1_4)*HM2_4;
+Krx_4=[Kr_xu_4(1);Kr_xu_4(2);Kr_xu_4(3)];
+Kru_4=Kr_xu_4(4);
+
+
+% 4. feladat, f:
+
+Kx_4=[K_1 K_2 K_3]
+
+figure('NumberTitle', 'off', 'Name', 'Negyedik feladat i része: ');
+step(A_uj4,B_4*2*pi*(Kru_4+Kx_4*Krx_4),C_4,0);
+title('Zárt szabályozási kör ugrás válasza')
+ylim([0 7.2]);
+ylabel('Szögelfordulás [rad]')
+xlabel('idő ')
+grid;
+
+
+% 4. feladat, g:
+
+% Rendszer végértéke visszacsatolástól független statikus alapjelkompenzációval:
+vegertek_4j=dcgain(A_uj4,B_4*2*pi*(Kru_4+Kx_4*Krx_4),C_4,0)
+
